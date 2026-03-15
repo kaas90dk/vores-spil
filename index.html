@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lær og Leg</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,#0d7a5f 0%,#00c896 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.card{
+  background:#fff;border-radius:28px;
+  box-shadow:0 24px 64px rgba(0,0,0,.22);
+  padding:32px 28px;width:100%;max-width:500px;
+}
+h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
+.sub{text-align:center;color:#999;font-size:.9rem;margin-bottom:28px}
+.age-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:22px}
+.age-btn{padding:20px 8px;border:none;border-radius:18px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;transition:transform .15s,box-shadow .15s}
+.age-btn:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.age-btn.a1{background:linear-gradient(135deg,#f7971e,#ffd200)}
+.age-btn.a2{background:linear-gradient(135deg,#ee0979,#ff6a00)}
+.age-btn.a3{background:linear-gradient(135deg,#4776e6,#8e54e9)}
+.prog-wrap{height:10px;background:#eee;border-radius:99px;margin-bottom:6px}
+.prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#0d7a5f,#00c896);transition:width .4s}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:.82rem;color:#888}
+.score-badge{background:#f0faf7;color:#0b5c48;border-radius:99px;padding:4px 14px;font-weight:700;font-size:.9rem}
+.cat-badge{display:inline-block;padding:4px 12px;border-radius:99px;font-size:.78rem;font-weight:700;color:#fff}
+.cat-math{background:linear-gradient(135deg,#f7971e,#ffd200);color:#333}
+.cat-spell{background:linear-gradient(135deg,#ee0979,#ff6a00)}
+.cat-color{background:linear-gradient(135deg,#4776e6,#8e54e9)}
+.q-text{font-size:1.3rem;font-weight:600;color:#222;text-align:center;min-height:52px;margin-bottom:8px;line-height:1.4}
+.hint{text-align:center;color:#aaa;font-size:.85rem;margin-bottom:6px;min-height:16px}
+.example-sent{text-align:center;color:#888;font-size:.9rem;font-style:italic;margin-bottom:12px;min-height:18px}
+.speak-btn{display:block;margin:0 auto 12px;background:#f0faf7;border:1px solid #b2ddd2;border-radius:99px;padding:8px 20px;font-size:.88rem;cursor:pointer;color:#0b5c48;transition:background .2s}
+.speak-btn:hover{background:#d4f0e8}
+.answer-input{width:100%;padding:14px 18px;border:2px solid #ddd;border-radius:14px;font-size:1.2rem;text-align:center;outline:none;transition:border-color .2s;margin-bottom:14px}
+.answer-input:focus{border-color:#00c896}
+.submit-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0d7a5f,#00c896);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,180,140,.35)}
+
+/* ── COLORING ── */
+#colorSection{display:none;flex-direction:column;align-items:center}
+.color-title{font-size:1.15rem;font-weight:700;color:#333;margin-bottom:10px;text-align:center}
+.color-legend{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.82rem;font-weight:600;color:#555}
+.legend-swatch{width:20px;height:20px;border-radius:5px;border:2px solid rgba(0,0,0,.12);flex-shrink:0}
+.palette{display:flex;gap:10px;margin-bottom:12px;justify-content:center;flex-wrap:wrap}
+.pal-btn{width:48px;height:48px;border-radius:14px;border:3px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;font-size:.75rem;font-weight:700;color:rgba(0,0,0,.5)}
+.pal-btn:hover{transform:scale(1.1)}
+.pal-btn.selected{border-color:#111 !important;transform:scale(1.18);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+#pixelGrid{display:inline-grid;gap:2px;margin-bottom:10px;background:#e5e7eb;border-radius:10px;padding:6px}
+.cell{border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:rgba(0,0,0,.4);background:#f9fafb;border:1px solid #e5e7eb;transition:background .15s,transform .1s;user-select:none}
+.cell:hover:not(.bg):not(.correct){transform:scale(1.06);border-color:#aaa}
+.cell.bg{background:#f3f4f6;border-color:#e5e7eb;cursor:default;pointer-events:none}
+.cell.correct{color:transparent;border-color:rgba(255,255,255,.3);cursor:default;pointer-events:none}
+.cell.wrong-flash{animation:wrongFlash .4s ease}
+@keyframes wrongFlash{0%{background:#fca5a5}50%{background:#f87171}100%{background:#f9fafb}}
+.progress-count{font-size:.82rem;color:#888;margin-bottom:8px;text-align:center}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:#fff;border-radius:16px;padding:14px 28px;font-size:1.05rem;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.2);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;text-align:center;min-width:220px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{color:#16a34a;border-left:6px solid #16a34a}
+.toast.no{color:#ef4444;border-left:6px solid #ef4444}
+
+/* ── END ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+.overlay.hidden{display:none}
+.end-card{background:#fff;border-radius:24px;padding:36px 28px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.end-card h2{font-size:2rem;margin-bottom:8px;color:#0b5c48}
+.end-emoji{font-size:3.5rem;margin-bottom:10px}
+.end-score{font-size:1.2rem;color:#555;margin-bottom:18px}
+.stars{font-size:2rem;margin-bottom:18px;letter-spacing:4px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px}
+.stat-box{background:#f0faf7;border-radius:14px;padding:14px}
+.stat-label{font-size:.78rem;color:#888;margin-bottom:4px}
+.stat-val{font-size:1.4rem;font-weight:700;color:#0b5c48}
+.restart-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0d7a5f,#00c896);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .15s}
+.restart-btn:hover{transform:translateY(-2px)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast"></div>
+
+<div class="overlay hidden" id="overlay">
+  <div class="end-card">
+    <div class="end-emoji" id="endEmoji"></div>
+    <h2>Godt klaret!</h2>
+    <div class="end-score" id="endScore"></div>
+    <div class="stars" id="endStars"></div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">🔢 Regning</div><div class="stat-val" id="sMath">–</div></div>
+      <div class="stat-box"><div class="stat-label">🔤 Stavning</div><div class="stat-val" id="sSpell">–</div></div>
+      <div class="stat-box"><div class="stat-label">🎨 Farvning</div><div class="stat-val" id="sColor">–</div></div>
+    </div>
+    <button class="restart-btn" onclick="restart()">Spil igen 🎮</button>
+  </div>
+</div>
+
+<div class="card">
+  <div id="startScreen">
+    <h1>🎓 Lær og Leg</h1>
+    <p class="sub">Regning · Stavning · Farvning</p>
+    <p style="text-align:center;color:#666;margin-bottom:20px;font-size:.95rem">Vælg din aldersgruppe:</p>
+    <div class="age-grid">
+      <button class="age-btn a1" onclick="startGame(0)">4–6 år<br><span style="font-size:.75rem;font-weight:400;opacity:.85">Begynder</span></button>
+      <button class="age-btn a2" onclick="startGame(1)">7–10 år<br><span style="font-size:.75rem;font-weight:400;opacity:.85">Øvet</span></button>
+      <button class="age-btn a3" onclick="startGame(2)">10–12 år<br><span style="font-size:.75rem;font-weight:400;opacity:.85">Erfaren</span></button>
+    </div>
+    <p style="text-align:center;color:#ccc;font-size:.8rem">15 opgaver · 3 kategorier</p>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+    <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+    <div class="meta">
+      <span id="qCnt">Opgave 1 af 15</span>
+      <span class="cat-badge cat-math" id="catBadge">🔢 Regning</span>
+      <span class="score-badge">⭐ <span id="scoreTxt">0</span></span>
+    </div>
+
+    <div id="qaSection">
+      <div class="q-text" id="qText"></div>
+      <div class="hint" id="hintTxt"></div>
+      <div class="example-sent" id="exampleSent"></div>
+      <button class="speak-btn hidden" id="speakBtn" onclick="speak()">🔊 Hør ordet</button>
+      <input class="answer-input" id="inp" type="text" placeholder="Skriv dit svar…" autocomplete="off" spellcheck="false">
+      <button class="submit-btn" onclick="submit()">Tjek svar ✅</button>
+    </div>
+
+    <div id="colorSection">
+      <div class="color-title" id="colorTitle"></div>
+      <div class="color-legend" id="colorLegend"></div>
+      <div class="palette" id="palette"></div>
+      <div class="progress-count" id="colorCount"></div>
+      <div id="pixelGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// SPEECH
+// ═══════════════════════════════════════════════════════════
+let voiceReady = false, daVoice = null;
+function loadVoices() {
+  const all = speechSynthesis.getVoices();
+  if (!all.length) return;
+  voiceReady = true;
+  // Prefer Google Danish, then any Danish, then Norwegian
+  daVoice = all.find(v => v.lang.startsWith('da') && v.name.toLowerCase().includes('google'))
+    || all.find(v => v.lang.startsWith('da'))
+    || all.find(v => v.lang.startsWith('nb') || v.lang.startsWith('no'))
+    || null;
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+let currentWord = '';
+function speak() {
+  if (!currentWord) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(currentWord);
+  u.lang = 'da-DK'; u.rate = 0.75;
+  if (daVoice) u.voice = daVoice;
+  speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════════════════════════
+// WORD BANKS  {w, h(hint), s(sentence)}
+// ═══════════════════════════════════════════════════════════
+const WORDS = {
+  0: [ // 4-6 år
+    {w:'kat',    h:'3 bogstaver – kæledyr der siger miau',   s:'Katten sover på sofaen.'},
+    {w:'hund',   h:'4 bogstaver – trofastest ven',           s:'Hunden løber i haven.'},
+    {w:'bil',    h:'3 bogstaver – man kører i den',          s:'Bilen er rød og hurtig.'},
+    {w:'sol',    h:'3 bogstaver – skinner på himlen',        s:'Solen skinner i dag.'},
+    {w:'is',     h:'2 bogstaver – spises om sommeren',       s:'Jeg vil gerne have en is.'},
+    {w:'mor',    h:'3 bogstaver – hun passer dig',           s:'Mor laver mad til os.'},
+    {w:'far',    h:'3 bogstaver – han passer dig',           s:'Far læser en bog for mig.'},
+    {w:'hus',    h:'3 bogstaver – man bor her',              s:'Vores hus er stort og hvidt.'},
+    {w:'hat',    h:'3 bogstaver – sættes på hovedet',        s:'Han har en sjov hat på.'},
+    {w:'bold',   h:'4 bogstaver – spiller man med',          s:'Vi spiller bold i parken.'},
+    {w:'fisk',   h:'4 bogstaver – svømmer i vand',           s:'Fisken svømmer i søen.'},
+    {w:'fugl',   h:'4 bogstaver – flyver i luften',          s:'Fuglen synger i træet.'},
+    {w:'skov',   h:'4 bogstaver – fuld af træer',            s:'Vi gik en tur i skoven.'},
+    {w:'kage',   h:'4 bogstaver – spises til fødselsdag',    s:'Kagen smager godt.'},
+    {w:'æble',   h:'4 bogstaver – rund rød eller grøn frugt',s:'Æblet er sødt og sprødt.'},
+    {w:'bord',   h:'4 bogstaver – man spiser ved det',       s:'Bordet er dækket til middag.'},
+    {w:'stol',   h:'4 bogstaver – man sidder på den',        s:'Stolen er blød og behagelig.'},
+    {w:'seng',   h:'4 bogstaver – man sover her',            s:'Jeg sover i min seng om natten.'},
+    {w:'sko',    h:'3 bogstaver – tages på fødderne',        s:'Mine sko er nye og blå.'},
+    {w:'mælk',   h:'4 bogstaver – hvid drik fra koen',       s:'Jeg drikker mælk til morgenmad.'},
+    {w:'banan',  h:'5 bogstaver – gul frugt med bue',        s:'Bananen er gul og blød.'},
+    {w:'regn',   h:'4 bogstaver – falder fra skyerne',       s:'Det regner meget i dag.'},
+    {w:'sne',    h:'3 bogstaver – hvidt om vinteren',        s:'Vi leger i sneen.'},
+    {w:'hav',    h:'3 bogstaver – stor vandmasse',           s:'Havet er blåt og dybt.'},
+    {w:'bog',    h:'3 bogstaver – man læser i den',          s:'Jeg læser en sjov bog.'},
+    {w:'orm',    h:'3 bogstaver – lille dyr i jorden',       s:'Ormen bor i jordet.'},
+    {w:'and',    h:'3 bogstaver – svømmer i søen og siger kvak', s:'Anden svømmer på søen.'},
+    {w:'ko',     h:'2 bogstaver – giver os mælk',            s:'Koen græsser på marken.'},
+    {w:'gris',   h:'4 bogstaver – lyserødt dyr der oinker',  s:'Grisen bor på gården.'},
+    {w:'hest',   h:'4 bogstaver – man rider på den',         s:'Hesten galopperer over marken.'},
+    {w:'mus',    h:'3 bogstaver – lille gnaverdyr',          s:'Musen gemmer sig bag kassen.'},
+    {w:'dag',    h:'3 bogstaver – det modsatte af nat',      s:'Det er en dejlig dag.'},
+    {w:'nat',    h:'3 bogstaver – det er mørkt da',          s:'Stjernerne lyser om natten.'},
+    {w:'vej',    h:'3 bogstaver – man kører på den',         s:'Vejen er lang og smal.'},
+    {w:'vand',   h:'4 bogstaver – man drikker det',          s:'Vand er godt for kroppen.'},
+    {w:'træ',    h:'3 bogstaver – vokser i skoven',          s:'Træet er meget gammelt.'},
+    {w:'sky',    h:'3 bogstaver – hvid pude på himlen',      s:'Skyen er hvid og blød.'},
+    {w:'måne',   h:'4 bogstaver – skinner om natten',        s:'Månen er rund i dag.'},
+    {w:'bro',    h:'3 bogstaver – man krydser vand på den',  s:'Broen er lang og smal.'},
+    {w:'tog',    h:'3 bogstaver – kører på skinner',         s:'Toget kører meget hurtigt.'},
+    {w:'fly',    h:'3 bogstaver – flyver på himlen',         s:'Flyet letter fra lufthavnen.'},
+    {w:'båd',    h:'4 bogstaver – sejler på vandet',         s:'Båden sejler på havet.'},
+    {w:'lege',   h:'4 bogstaver – hvad børn elsker at gøre', s:'Vi leger gemmeleg i parken.'},
+    {w:'løbe',   h:'4 bogstaver – at bevæge sig hurtigt',   s:'Jeg kan løbe meget hurtigt.'},
+    {w:'hoppe',  h:'5 bogstaver – at springe op i luften',   s:'Vi hopper på trampolin.'},
+  ],
+  1: [ // 7-10 år
+    {w:'elefant',    h:'7 bogstaver – stor grå snabeldyr',         s:'Elefanten lever i Afrika og Asien.'},
+    {w:'giraf',      h:'5 bogstaver – har verdens længste hals',   s:'Giraffen spiser blade fra toppen af træet.'},
+    {w:'pingvin',    h:'7 bogstaver – fugl der ikke flyver, lever på is', s:'Pingvinen svømmer i iskoldt vand.'},
+    {w:'isbjørn',    h:'7 bogstaver – stor hvid bjørn fra Arktis', s:'Isbjørnen er et fremragende svømmepattedyr.'},
+    {w:'leopard',    h:'7 bogstaver – plettet stor kat der klatrer', s:'Leoparden gemmer sit bytte i træerne.'},
+    {w:'sommerfugl', h:'10 bogstaver – flyver fra blomst til blomst', s:'Sommerfuglen starter som en larve.'},
+    {w:'skildpadde', h:'10 bogstaver – dyr med hårdt skjold på ryggen', s:'Skildpadden kan leve i hundrede år.'},
+    {w:'stjerne',    h:'7 bogstaver – funkler på nattehimlen',     s:'Stjernen er faktisk en sol langt væk.'},
+    {w:'vejr',       h:'4 bogstaver – sol, regn eller sne',         s:'Vejret er meget skiftende om foråret.'},
+    {w:'vulkan',     h:'6 bogstaver – bjerg der spyr lava',         s:'Vulkanen udbrød for tusind år siden.'},
+    {w:'planet',     h:'6 bogstaver – kreds om en sol',             s:'Vores planet hedder Jorden.'},
+    {w:'dinosaur',   h:'8 bogstaver – kæmpe uddøde krybdyr',       s:'Dinosaurerne uddøde for 66 millioner år siden.'},
+    {w:'tornado',    h:'7 bogstaver – kraftig hvirvelstorm',        s:'Tornaden ødelagde mange huse.'},
+    {w:'kompas',     h:'6 bogstaver – viser verdenshjørnerne',      s:'Kompasset viser altid mod nord.'},
+    {w:'robotter',   h:'8 bogstaver – maskiner der udfører opgaver', s:'Robotter bruges i mange fabrikker.'},
+    {w:'astronaut',  h:'9 bogstaver – flyver ud i rummet',          s:'Astronauten gik ud af rumstationen.'},
+    {w:'eventyr',    h:'7 bogstaver – H.C. Andersen skrev mange',   s:'Vi læste et spændende eventyr i dag.'},
+    {w:'lejlighed',  h:'9 bogstaver – man bor her i en by',         s:'Lejligheden er på tredje sal.'},
+    {w:'bibliotek',  h:'9 bogstaver – sted med mange bøger',        s:'Vi lånte bøger på biblioteket.'},
+    {w:'matematik',  h:'9 bogstaver – regning, geometri og tal',    s:'Matematik er mit yndlingsfag.'},
+    {w:'computer',   h:'8 bogstaver – skærm og tastatur',           s:'Jeg lavede mit projekt på computeren.'},
+    {w:'telefon',    h:'7 bogstaver – man ringer med den',          s:'Min telefon bipper hele tiden.'},
+    {w:'Australien', h:'9 bogstaver – kontinent med kænguruer',     s:'Australien ligger på den sydlige halvkugle.'},
+    {w:'England',    h:'7 bogstaver – ø-land i Nordeuropa',         s:'England er kendt for dets te og fodboldbaner.'},
+    {w:'frugter',    h:'7 bogstaver – æble, pære, banan…',          s:'Vi spiser frugter fordi de er sunde.'},
+    {w:'havfrue',    h:'7 bogstaver – halvt kvinde, halvt fisk',    s:'Den lille havfrue er et eventyr af H.C. Andersen.'},
+    {w:'sommer',     h:'6 bogstaver – årstid med varmt vejr',       s:'Om sommeren bader vi ved stranden.'},
+    {w:'vinter',     h:'6 bogstaver – årstid med koldt vejr',       s:'Om vinteren kan det sne og fryse.'},
+    {w:'svømme',     h:'6 bogstaver – bevæge sig i vand',           s:'Hun kan svømme hurtigere end alle andre.'},
+    {w:'skygge',     h:'6 bogstaver – dannes når lys blokeres',     s:'Vi satte os i skyggen fordi det var varmt.'},
+    {w:'naturlig',   h:'8 bogstaver – noget der ikke er kunstigt',  s:'Honning er et naturligt sødemiddel.'},
+    {w:'voksen',     h:'6 bogstaver – modsætning til barn',         s:'Voksne har mange ansvar i hverdagen.'},
+    {w:'marked',     h:'6 bogstaver – sted man handler mad',        s:'Vi købte friske grøntsager på markedet.'},
+    {w:'problem',    h:'7 bogstaver – noget man skal løse',         s:'Vi fandt en god løsning på problemet.'},
+    {w:'resultat',   h:'8 bogstaver – hvad man får ud af noget',    s:'Resultatet af prøven var godt.'},
+    {w:'spørgsmål',  h:'9 bogstaver – noget man stiller til andre', s:'Læreren stillede et svært spørgsmål.'},
+    {w:'sætning',    h:'7 bogstaver – gruppe ord der giver mening', s:'En sætning begynder med stort bogstav.'},
+    {w:'bogstav',    h:'7 bogstaver – A, B, C er eksempler',        s:'Alfabetet har 29 bogstaver på dansk.'},
+    {w:'fortælling', h:'10 bogstaver – en historie man fortæller',  s:'Han fortalte en spændende fortælling.'},
+    {w:'museum',     h:'6 bogstaver – sted med gamle ting og kunst', s:'Vi besøgte et dinosaurmuseum i dag.'},
+    {w:'opdagelse',  h:'9 bogstaver – noget man finder for første gang', s:'Columbus opdagelse ændrede verdenshistorien.'},
+    {w:'opskrift',   h:'8 bogstaver – vejledning til at lave mad',  s:'Vi fulgte opskriften for at bage kage.'},
+    {w:'delfin',     h:'6 bogstaver – intelligent havpattedyr',     s:'Delfinen er meget intelligent og leg.'},
+    {w:'krystal',    h:'7 bogstaver – gennemsigtigt mineral',       s:'Krystaller dannes over meget lang tid.'},
+    {w:'experiment', h:'10 bogstaver – videnskabelig prøve',        s:'Vi lavede et sjovt eksperiment med vand.'},
+  ],
+  2: [ // 10-12 år
+    {w:'demokrati',       h:'9 bogstaver – folkets styre',                    s:'Danmark er et demokrati med frie valg.'},
+    {w:'evolution',       h:'9 bogstaver – arternes langsome udvikling',      s:'Evolutionsteorien blev fremsat af Darwin.'},
+    {w:'atmosfære',       h:'9 bogstaver – luftlaget der omgiver Jorden',     s:'Atmosfæren beskytter os mod solens stråler.'},
+    {w:'hypotese',        h:'8 bogstaver – et videnskabeligt forslag',        s:'Forskeren fremlagde sin hypotese for kollegerne.'},
+    {w:'perspektiv',      h:'10 bogstaver – den vinkel man ser tingene fra',  s:'Det er vigtigt at se sagen fra begge perspektiver.'},
+    {w:'konsekvens',      h:'10 bogstaver – resultat af en handling',         s:'Enhver handling har konsekvenser for andre.'},
+    {w:'kompetence',      h:'10 bogstaver – evner og faglige færdigheder',    s:'Læreren har stor kompetence inden for matematik.'},
+    {w:'strategi',        h:'8 bogstaver – en plan for at nå et mål',         s:'Holdet diskuterede strategien inden kampen.'},
+    {w:'potentiale',      h:'10 bogstaver – mulighed for fremtidig udvikling', s:'Hun har et enormt potentiale som musiker.'},
+    {w:'nationalitet',    h:'12 bogstaver – det land man er statsborger i',   s:'Hans nationalitet fremgår af passet.'},
+    {w:'reproduktion',    h:'12 bogstaver – formering hos levende væsener',   s:'Reproduktion er afgørende for arternes overlevelse.'},
+    {w:'metabolisme',     h:'11 bogstaver – kroppens omsætning af næringsstoffer', s:'Et aktivt metabolisme forbrænder mere energi.'},
+    {w:'acceleration',    h:'12 bogstaver – tiltagende hastighed',            s:'Accelerationen af bilen var imponerende.'},
+    {w:'manipulation',    h:'12 bogstaver – at påvirke andre med list',       s:'Propagandaen var et eksempel på politisk manipulation.'},
+    {w:'transformation',  h:'14 bogstaver – en grundlæggende forandring',     s:'Digital transformation har ændret mange brancher.'},
+    {w:'infrastruktur',   h:'13 bogstaver – vejnet, internet og forsyning',   s:'Landets infrastruktur er afgørende for væksten.'},
+    {w:'biodiversitet',   h:'13 bogstaver – mangfoldighed af liv på Jorden',  s:'Biodiversiteten trues af klimaforandringer.'},
+    {w:'civilisation',    h:'12 bogstaver – avanceret menneskelig kultur',    s:'Den egyptiske civilisation er tusinder af år gammel.'},
+    {w:'kommunikation',   h:'13 bogstaver – udveksling af information',       s:'God kommunikation er vigtig i alle relationer.'},
+    {w:'organisation',    h:'12 bogstaver – gruppe med fælles formål',        s:'FN er en international organisation.'},
+    {w:'revolution',      h:'10 bogstaver – pludselig stor forandring',       s:'Den franske revolution ændrede hele Europa.'},
+    {w:'koncentration',   h:'13 bogstaver – evnen til at fastholde fokus',    s:'Det kræver stor koncentration at lære nyt.'},
+    {w:'vegetation',      h:'10 bogstaver – planter i et bestemt område',     s:'Tropisk regnskov har tæt og frodig vegetation.'},
+    {w:'sammenhæng',      h:'10 bogstaver – tingenes indbyrdes forbindelser', s:'Der er en klar sammenhæng mellem kost og sundhed.'},
+    {w:'fotosyntese',     h:'11 bogstaver – planters energiproduktion via lys', s:'Fotosyntese omdanner sollys til sukker og ilt.'},
+    {w:'gravitationskraft',h:'17 bogstaver – tyngdekraften der tiltrækker masser', s:'Gravitationskraft holder planeterne i kredsløb om solen.'},
+    {w:'elektricitet',    h:'12 bogstaver – strøm i ledninger',               s:'Elektricitet kan produceres af sol og vind.'},
+    {w:'magnetisme',      h:'11 bogstaver – tiltrækning og frastødning',      s:'Magnetisme bruges i mange teknologiske enheder.'},
+    {w:'immunsystem',     h:'11 bogstaver – kroppens forsvar mod sygdom',     s:'Et stærkt immunsystem beskytter mod infektioner.'},
+    {w:'proportional',    h:'12 bogstaver – i fast forhold til hinanden',     s:'Hastighed og tid er proportionale størrelser.'},
+    {w:'eksponentiel',    h:'12 bogstaver – vokser hurtigere og hurtigere',   s:'Befolkningsvækst kan være eksponentiel.'},
+    {w:'filosofisk',      h:'10 bogstaver – relateret til livets store spørgsmål', s:'Det er et dybt filosofisk spørgsmål.'},
+    {w:'interdisciplinær',h:'17 bogstaver – på tværs af fagområder',          s:'Klimaforskning er tværfaglig og interdisciplinær.'},
+    {w:'videnskab',       h:'9 bogstaver – systematisk forskning og viden',   s:'Videnskab bygger på beviser og eksperimenter.'},
+    {w:'befolkning',      h:'10 bogstaver – antal mennesker i et område',     s:'Danmarks befolkning er ca. seks millioner.'},
+    {w:'konstruktion',    h:'12 bogstaver – at bygge eller designe noget',    s:'Broens konstruktion er teknisk imponerende.'},
+    {w:'abstrakt',        h:'8 bogstaver – noget der ikke er konkret',        s:'Matematik kan virke abstrakt men er meget praktisk.'},
+    {w:'institution',     h:'11 bogstaver – en etableret organisation',       s:'Skolen er en vigtig institution i samfundet.'},
+    {w:'perspektivering', h:'15 bogstaver – at sætte noget i større sammenhæng', s:'En god opgave indeholder altid en perspektivering.'},
+    {w:'paradigme',       h:'9 bogstaver – en dominerende tankemodel',        s:'Kuhns teorier om paradigmeskift er velkendte.'},
+    {w:'empirisk',        h:'8 bogstaver – baseret på erfaring og observation', s:'Naturvidenskab er empirisk og baseres på data.'},
+    {w:'retfærdighed',    h:'13 bogstaver – fair behandling af alle',         s:'Retfærdighed er fundamentet for et godt samfund.'},
+    {w:'bæredygtighed',   h:'14 bogstaver – at bevare ressourcer for fremtiden', s:'Bæredygtighed handler om at passe på planeten.'},
+    {w:'global',          h:'6 bogstaver – som vedrører hele verden',         s:'Klimaforandringer er et globalt problem.'},
+    {w:'kompliceret',     h:'11 bogstaver – svær at forstå eller løse',       s:'Ligningen var meget kompliceret at løse.'},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════
+// PIXEL ART ANIMALS  (0=bg, 1-4=color idx per animal)
+// ═══════════════════════════════════════════════════════════
+const ANIMALS = [
+  {
+    name:'🐱 Katten', cols:12,
+    pal:[null,{h:'#f97316',n:'Orange'},{h:'#16a34a',n:'Grøn'},{h:'#f9a8d4',n:'Pink'},{h:'#fef3c7',n:'Creme'}],
+    grid:[
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,1,3,1,0,0,0,0,1,3,1,0,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,2,2,1,1,1,1,2,2,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,4,4,4,4,4,4,4,4,1,1,
+      1,1,4,3,4,4,4,4,3,4,1,1,
+      1,1,4,4,3,3,3,3,4,4,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      0,1,1,1,1,1,1,1,1,1,1,0,
+    ],
+  },
+  {
+    name:'🐟 Fisken', cols:12,
+    pal:[null,{h:'#ea580c',n:'Orange'},{h:'#2563eb',n:'Blå'},{h:'#1e293b',n:'Mørk'}],
+    grid:[
+      1,1,0,0,0,0,0,0,0,0,1,1,
+      0,1,1,2,2,2,2,2,2,0,1,0,
+      0,0,2,2,3,2,2,2,2,2,2,0,
+      1,0,2,2,2,2,2,2,2,2,2,0,
+      0,0,2,2,2,2,2,2,2,2,2,0,
+      0,1,1,2,2,2,2,2,2,0,1,0,
+      1,1,0,0,0,0,0,0,0,0,1,1,
+    ],
+  },
+  {
+    name:'🦉 Uglen', cols:10,
+    pal:[null,{h:'#92400e',n:'Brun'},{h:'#fbbf24',n:'Gul'},{h:'#f97316',n:'Orange'},{h:'#fef3c7',n:'Creme'}],
+    grid:[
+      0,1,1,1,1,1,1,1,1,0,
+      0,1,4,4,1,1,4,4,1,0,
+      1,1,2,2,1,1,2,2,1,1,
+      1,1,2,2,1,1,2,2,1,1,
+      1,1,4,4,3,3,4,4,1,1,
+      1,1,4,4,4,4,4,4,1,1,
+      1,4,1,1,1,1,1,1,4,1,
+      1,4,4,1,1,1,1,4,4,1,
+      0,1,1,4,1,1,4,1,1,0,
+      0,0,1,1,1,1,1,1,0,0,
+    ],
+  },
+  {
+    name:'🐧 Pingvinen', cols:8,
+    pal:[null,{h:'#1e293b',n:'Mørkeblå'},{h:'#f8fafc',n:'Hvid'},{h:'#fbbf24',n:'Gul'},{h:'#f97316',n:'Orange'}],
+    grid:[
+      0,0,1,1,1,1,0,0,
+      0,1,1,2,2,1,1,0,
+      0,1,3,2,2,3,1,0,
+      0,1,1,2,2,1,1,0,
+      0,0,1,3,3,1,0,0,
+      1,1,1,2,2,1,1,1,
+      1,1,1,2,2,1,1,1,
+      1,1,2,2,2,2,1,1,
+      1,1,2,2,2,2,1,1,
+      1,1,1,2,2,1,1,1,
+      0,4,1,1,1,1,4,0,
+      0,4,4,0,0,4,4,0,
+    ],
+  },
+  {
+    name:'🐇 Kaninen', cols:8,
+    pal:[null,{h:'#d1d5db',n:'Grå'},{h:'#f9a8d4',n:'Lyserød'},{h:'#ec4899',n:'Pink'},{h:'#f9fafb',n:'Hvid'}],
+    grid:[
+      0,1,1,0,0,1,1,0,
+      0,1,2,0,0,2,1,0,
+      0,1,1,0,0,1,1,0,
+      0,1,1,0,0,1,1,0,
+      1,1,1,1,1,1,1,1,
+      1,1,3,1,1,3,1,1,
+      1,1,1,3,3,1,1,1,
+      0,1,1,1,1,1,1,0,
+      0,1,4,4,4,4,1,0,
+      0,1,4,4,4,4,1,0,
+      0,0,1,4,4,1,0,0,
+      0,0,1,0,0,1,0,0,
+    ],
+  },
+  {
+    name:'🐸 Frøen', cols:10,
+    pal:[null,{h:'#16a34a',n:'Grøn'},{h:'#fbbf24',n:'Gul'},{h:'#14532d',n:'Mørkegrøn'}],
+    grid:[
+      0,2,2,0,0,0,0,2,2,0,
+      1,2,2,1,0,0,1,2,2,1,
+      1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,3,3,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,
+      0,1,1,3,1,1,3,1,1,0,
+      0,1,1,1,1,1,1,1,1,0,
+      0,0,1,1,0,0,1,1,0,0,
+    ],
+  },
+  {
+    name:'🦋 Sommerfuglen', cols:12,
+    pal:[null,{h:'#f97316',n:'Orange'},{h:'#1e293b',n:'Mørk'},{h:'#fbbf24',n:'Gul'}],
+    grid:[
+      0,0,2,0,0,0,0,0,0,2,0,0,
+      0,0,0,2,0,0,0,0,2,0,0,0,
+      1,1,0,0,2,2,2,2,0,0,1,1,
+      1,1,1,3,2,2,2,2,3,1,1,1,
+      1,1,1,1,2,2,2,2,1,1,1,1,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,3,2,2,2,2,3,1,0,0,
+      0,0,0,1,2,2,2,2,1,0,0,0,
+      0,0,0,0,2,2,2,2,0,0,0,0,
+      0,0,0,0,0,2,2,0,0,0,0,0,
+    ],
+  },
+  {
+    name:'🐘 Elefanten', cols:12,
+    pal:[null,{h:'#9ca3af',n:'Grå'},{h:'#f9a8d4',n:'Pink'},{h:'#374151',n:'Mørk'}],
+    grid:[
+      0,2,2,0,1,1,1,1,0,2,2,0,
+      2,2,2,1,1,1,1,1,1,2,2,2,
+      2,2,1,1,3,1,1,3,1,1,2,2,
+      2,2,1,1,1,1,1,1,1,1,2,2,
+      0,2,1,1,1,1,1,1,1,1,2,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,0,1,1,1,1,1,1,0,0,0,
+      0,0,0,0,1,1,1,1,0,0,0,0,
+      0,0,0,0,0,1,1,0,0,0,0,0,
+      0,0,0,0,0,1,1,0,0,0,0,0,
+    ],
+  },
+  {
+    name:'🐻 Bjørnen', cols:12,
+    pal:[null,{h:'#92400e',n:'Brun'},{h:'#374151',n:'Mørk'},{h:'#fef3c7',n:'Creme'},{h:'#b45309',n:'Mellembrun'}],
+    grid:[
+      0,4,4,0,0,0,0,0,0,4,4,0,
+      4,1,1,4,1,1,1,1,4,1,1,4,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,2,2,1,1,1,1,2,2,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,3,3,3,3,3,3,3,3,1,1,
+      1,1,3,3,3,2,2,3,3,3,1,1,
+      1,1,3,3,3,3,3,3,3,3,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      0,1,1,1,1,1,1,1,1,1,1,0,
+    ],
+  },
+  {
+    name:'🐌 Sneglen', cols:12,
+    pal:[null,{h:'#16a34a',n:'Grøn'},{h:'#f97316',n:'Orange'},{h:'#fbbf24',n:'Gul'},{h:'#c2410c',n:'Mørkeorange'}],
+    grid:[
+      0,0,0,0,2,2,2,2,0,0,0,0,
+      0,0,0,2,2,4,4,2,2,0,0,0,
+      0,0,2,2,4,2,2,4,2,2,0,0,
+      0,0,2,2,2,4,4,2,2,2,0,0,
+      3,0,0,2,2,2,2,2,0,0,0,0,
+      0,3,1,1,2,2,2,2,1,0,0,0,
+      1,1,1,1,1,1,1,1,1,1,0,0,
+      0,1,1,1,1,1,1,1,1,0,0,0,
+    ],
+  },
+  {
+    name:'🦊 Ræven', cols:12,
+    pal:[null,{h:'#ea580c',n:'Orange'},{h:'#f8fafc',n:'Hvid'},{h:'#1e293b',n:'Sort'}],
+    grid:[
+      1,1,0,0,0,0,0,0,0,0,1,1,
+      1,1,1,0,0,0,0,0,0,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,3,1,1,1,1,1,1,3,1,1,
+      1,2,2,2,1,1,1,1,2,2,2,1,
+      1,2,2,2,3,1,1,3,2,2,2,1,
+      1,2,2,2,2,3,3,2,2,2,2,1,
+      0,1,2,1,1,1,1,1,1,2,1,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,0,1,0,0,0,0,1,0,0,0,
+    ],
+  },
+  {
+    name:'🐮 Koen', cols:12,
+    pal:[null,{h:'#f8fafc',n:'Hvid'},{h:'#1e293b',n:'Sort'},{h:'#f9a8d4',n:'Pink'}],
+    grid:[
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,1,1,1,1,1,1,1,1,1,1,0,
+      1,1,2,1,1,1,1,1,1,2,1,1,
+      1,1,2,1,2,1,1,2,1,2,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,3,3,3,3,3,3,1,1,1,
+      1,1,1,3,2,3,3,2,3,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      0,1,1,1,1,1,1,1,1,1,1,0,
+      0,0,1,1,0,0,0,0,1,1,0,0,
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// MATH GENERATOR
+// ═══════════════════════════════════════════════════════════
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function genMath(age) {
+  if (age===0) {
+    const t=rnd(0,3);
+    if(t===0){const a=rnd(1,9),b=rnd(1,10-a);return{q:`${a} + ${b} = ?`,a:String(a+b)}}
+    if(t===1){const a=rnd(2,10),b=rnd(1,a-1);return{q:`${a} − ${b} = ?`,a:String(a-b)}}
+    if(t===2){const tb=[2,5,10],v=tb[rnd(0,2)],n=rnd(1,5);return{q:`${n} × ${v} = ?`,a:String(n*v)}}
+    const n=rnd(1,10)*2;return{q:`Hvad er halvdelen af ${n}?`,a:String(n/2)}
+  }
+  if (age===1) {
+    const t=rnd(0,5);
+    if(t===0){const a=rnd(10,99),b=rnd(10,99);return{q:`${a} + ${b} = ?`,a:String(a+b)}}
+    if(t===1){const a=rnd(20,99),b=rnd(10,a);return{q:`${a} − ${b} = ?`,a:String(a-b)}}
+    if(t===2){const a=rnd(2,9),b=rnd(2,9);return{q:`${a} × ${b} = ?`,a:String(a*b)}}
+    if(t===3){const a=rnd(2,9),b=rnd(2,9);return{q:`${a*b} ÷ ${a} = ?`,a:String(b)}}
+    if(t===4){const n=rnd(2,20)*2;return{q:`Hvad er halvdelen af ${n}?`,a:String(n/2)}}
+    const n=rnd(2,10)*5;return{q:`Hvad er det dobbelte af ${n}?`,a:String(n*2)}
+  }
+  // age 2
+  const t=rnd(0,6);
+  if(t===0){const a=rnd(100,999),b=rnd(100,999);return{q:`${a} + ${b} = ?`,a:String(a+b)}}
+  if(t===1){const a=rnd(200,999),b=rnd(100,a-1);return{q:`${a} − ${b} = ?`,a:String(a-b)}}
+  if(t===2){const a=rnd(11,25),b=rnd(11,25);return{q:`${a} × ${b} = ?`,a:String(a*b)}}
+  if(t===3){const ps=[10,20,25,50],p=ps[rnd(0,3)],b=rnd(1,10)*20;return{q:`Hvad er ${p}% af ${b}?`,a:String(b*p/100)}}
+  if(t===4){const n=rnd(2,12);return{q:`${n}² = ?`,a:String(n*n)}}
+  if(t===5){const b=rnd(5,30),x=rnd(3,25);return{q:`x + ${b} = ${x+b}, hvad er x?`,a:String(x)}}
+  const a=rnd(-15,5),b=rnd(-15,5);return{q:`${a} + (${b}) = ?`,a:String(a+b)}
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let age, sequence, idx, score, stats, usedWords;
+let selectedColor=1, cellColors=[], currentAnimal=null;
+const TOTAL=15;
+
+function buildSequence(){
+  // positions 4,9,14 = coloring; rest alternate math/spell
+  const seq=[];
+  for(let i=0;i<15;i++){
+    if((i+1)%5===0) seq.push('color');
+    else seq.push(i%2===0?'math':'spell');
+  }
+  return seq;
+}
+
+function startGame(ag){
+  age=ag; score=0; idx=0;
+  stats={math:{c:0,t:0},spell:{c:0,t:0},color:{c:0,t:0}};
+  usedWords=new Set();
+  sequence=buildSequence();
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  showActivity();
+}
+
+function showActivity(){
+  updateMeta(sequence[idx]);
+  if(sequence[idx]==='color') showColoring();
+  else showQA(sequence[idx]);
+}
+
+function updateMeta(type){
+  document.getElementById('progBar').style.width=`${(idx/TOTAL)*100}%`;
+  document.getElementById('qCnt').textContent=`Opgave ${idx+1} af ${TOTAL}`;
+  document.getElementById('scoreTxt').textContent=score;
+  const b=document.getElementById('catBadge');
+  if(type==='math'){b.textContent='🔢 Regning';b.className='cat-badge cat-math'}
+  else if(type==='spell'){b.textContent='🔤 Stavning';b.className='cat-badge cat-spell'}
+  else{b.textContent='🎨 Farvning';b.className='cat-badge cat-color'}
+}
+
+// ═══════════════════════════════════════════════════════════
+// Q&A
+// ═══════════════════════════════════════════════════════════
+function showQA(type){
+  document.getElementById('qaSection').style.display='';
+  document.getElementById('colorSection').style.display='none';
+  currentWord='';
+  const inp=document.getElementById('inp');
+  if(type==='math'){
+    const {q,a}=genMath(age);
+    document.getElementById('qText').textContent=q;
+    document.getElementById('hintTxt').textContent='';
+    document.getElementById('exampleSent').textContent='';
+    document.getElementById('speakBtn').classList.add('hidden');
+    inp.setAttribute('data-answer',a.toLowerCase());
+  } else {
+    const pool=WORDS[age];
+    const unused=pool.filter(p=>!usedWords.has(p.w));
+    const chosen=unused.length?unused[rnd(0,unused.length-1)]:pool[rnd(0,pool.length-1)];
+    usedWords.add(chosen.w);
+    currentWord=chosen.w;
+    document.getElementById('qText').textContent='Hvad er ordet?';
+    document.getElementById('hintTxt').textContent=chosen.h;
+    document.getElementById('exampleSent').textContent='"'+chosen.s+'"';
+    document.getElementById('speakBtn').classList.remove('hidden');
+    inp.setAttribute('data-answer',chosen.w.toLowerCase());
+    // auto-speak after short delay
+    setTimeout(()=>speak(),400);
+  }
+  inp.value=''; inp.focus();
+  inp.onkeydown=e=>{if(e.key==='Enter')submit()};
+}
+
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,'')}
+
+function submit(){
+  const inp=document.getElementById('inp');
+  const user=norm(inp.value);
+  const correct=norm(inp.getAttribute('data-answer'));
+  const key=sequence[idx]==='math'?'math':'spell';
+  stats[key].t++;
+  if(user===correct){
+    score++; stats[key].c++;
+    toast(pickCheer(),'ok'); fireConfetti();
+  } else {
+    toast(`Forkert. Svaret var: ${inp.getAttribute('data-answer')} 😊`,'no');
+  }
+  advance();
+}
+
+function pickCheer(){
+  return ['Rigtigt! 🎉','Super! ⭐','Korrekt! 🥳','Perfekt! 🌟','Ja! 👏','Bravo! 🎊'][rnd(0,5)];
+}
+
+// ═══════════════════════════════════════════════════════════
+// COLORING
+// ═══════════════════════════════════════════════════════════
+function showColoring(){
+  document.getElementById('qaSection').style.display='none';
+  const cs=document.getElementById('colorSection');
+  cs.style.display='flex';
+
+  // pick a random animal (avoid repeating recent)
+  currentAnimal=ANIMALS[rnd(0,ANIMALS.length-1)];
+  document.getElementById('colorTitle').textContent=`🎨 Farvelæg: ${currentAnimal.name}`;
+
+  // legend
+  const usedIdx=[...new Set(currentAnimal.grid.filter(v=>v>0))].sort();
+  const leg=document.getElementById('colorLegend');
+  leg.innerHTML='';
+  usedIdx.forEach(ci=>{
+    const d=document.createElement('div');
+    d.className='legend-item';
+    d.innerHTML=`<div class="legend-swatch" style="background:${currentAnimal.pal[ci].h}"></div><span>${ci} = ${currentAnimal.pal[ci].n}</span>`;
+    leg.appendChild(d);
+  });
+
+  // palette
+  const pal=document.getElementById('palette');
+  pal.innerHTML='';
+  selectedColor=usedIdx[0];
+  usedIdx.forEach(ci=>{
+    const btn=document.createElement('button');
+    btn.className='pal-btn'+(ci===selectedColor?' selected':'');
+    btn.style.background=currentAnimal.pal[ci].h;
+    btn.title=currentAnimal.pal[ci].n;
+    btn.textContent=ci;
+    btn.onclick=()=>{
+      selectedColor=ci;
+      pal.querySelectorAll('.pal-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    pal.appendChild(btn);
+  });
+
+  // grid cells
+  const gridEl=document.getElementById('pixelGrid');
+  gridEl.innerHTML='';
+  const cols=currentAnimal.cols;
+  // compute cell size to fit card
+  const avail=Math.min(500,window.innerWidth)-56-20;
+  const cs2=Math.min(44,Math.floor((avail-(cols-1)*2)/cols));
+  gridEl.style.gridTemplateColumns=`repeat(${cols},${cs2}px)`;
+  cellColors=currentAnimal.grid.map(()=>0);
+  let correctCount=0;
+  const totalCells=currentAnimal.grid.filter(v=>v>0).length;
+
+  function updateCount(){
+    correctCount=currentAnimal.grid.reduce((acc,val,i)=>acc+(val>0&&cellColors[i]===val?1:0),0);
+    document.getElementById('colorCount').textContent=`${correctCount} / ${totalCells} felter korrekt`;
+    if(correctCount===totalCells){
+      setTimeout(()=>{
+        score++; stats.color.c++;
+        toast('Flot! Dyret er færdigfarvet! 🎨','ok');
+        fireConfetti();
+        advance();
+      },400);
+    }
+  }
+
+  currentAnimal.grid.forEach((val,i)=>{
+    const cell=document.createElement('div');
+    cell.className='cell';
+    cell.style.width=cs2+'px'; cell.style.height=cs2+'px';
+    if(val===0){
+      cell.classList.add('bg');
+    } else {
+      cell.textContent=val;
+      cell.onclick=()=>{
+        if(cell.classList.contains('correct')) return;
+        if(selectedColor===val){
+          // correct!
+          cellColors[i]=val;
+          cell.style.background=currentAnimal.pal[val].h;
+          cell.textContent='';
+          cell.classList.add('correct');
+          updateCount();
+        } else {
+          // wrong color - flash and revert
+          cell.classList.add('wrong-flash');
+          setTimeout(()=>cell.classList.remove('wrong-flash'),420);
+        }
+      };
+    }
+    gridEl.appendChild(cell);
+  });
+
+  stats.color.t++;
+  updateCount();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ADVANCE
+// ═══════════════════════════════════════════════════════════
+function advance(){
+  idx++;
+  if(idx>=TOTAL) setTimeout(showEnd,1100);
+  else setTimeout(showActivity,1000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// END
+// ═══════════════════════════════════════════════════════════
+function showEnd(){
+  const pct=score/TOTAL;
+  let emoji,stars;
+  if(pct>=.9){emoji='🏆';stars='⭐⭐⭐'}
+  else if(pct>=.6){emoji='🎉';stars='⭐⭐'}
+  else{emoji='💪';stars='⭐'}
+  document.getElementById('endEmoji').textContent=emoji;
+  document.getElementById('endScore').textContent=`${score} ud af ${TOTAL} rigtige`;
+  document.getElementById('endStars').textContent=stars;
+  const fmt=s=>`${s.c}/${s.t}`;
+  document.getElementById('sMath').textContent=fmt(stats.math);
+  document.getElementById('sSpell').textContent=fmt(stats.spell);
+  document.getElementById('sColor').textContent=fmt(stats.color);
+  document.getElementById('overlay').classList.remove('hidden');
+  document.getElementById('progBar').style.width='100%';
+}
+
+function restart(){
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+let toastT;
+function toast(msg,cls){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`toast ${cls} show`;
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════════════
+(()=>{
+  const cv=document.getElementById('confetti'),cx=cv.getContext('2d');
+  let pieces=[];
+  const resize=()=>{cv.width=innerWidth;cv.height=innerHeight};
+  addEventListener('resize',resize); resize();
+  class P{constructor(){this.x=Math.random()*cv.width;this.y=-10;this.w=rnd(6,12);this.h=rnd(3,6);this.color=`hsl(${rnd(0,360)},80%,60%)`;this.rot=Math.random()*Math.PI*2;this.vy=rnd(2,5);this.vx=(Math.random()-.5)*3;this.vr=(Math.random()-.5)*.2;this.alpha=1}}
+  (function loop(){cx.clearRect(0,0,cv.width,cv.height);pieces=pieces.filter(p=>p.alpha>0);pieces.forEach(p=>{p.y+=p.vy;p.x+=p.vx;p.rot+=p.vr;if(p.y>cv.height*.7)p.alpha-=.025;cx.save();cx.globalAlpha=p.alpha;cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.color;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore()});requestAnimationFrame(loop)})();
+  window.fireConfetti=()=>{for(let i=0;i<70;i++)pieces.push(new P())};
+})();
+</script>
+</body>
+</html>
