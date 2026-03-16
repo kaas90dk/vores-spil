@@ -26,7 +26,6 @@ h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
 .cat-badge{display:inline-block;padding:4px 10px;border-radius:99px;font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap}
 .cat-math{background:linear-gradient(135deg,#f7971e,#ffd200);color:#333}
 .cat-spell{background:linear-gradient(135deg,#ee0979,#ff6a00)}
-.cat-color{background:linear-gradient(135deg,#4776e6,#8e54e9)}
 .q-text{font-size:1.3rem;font-weight:600;color:#222;text-align:center;min-height:52px;margin-bottom:8px;line-height:1.4}
 .hint{text-align:center;color:#aaa;font-size:.85rem;margin-bottom:6px;min-height:16px}
 .example-sent{text-align:center;color:#888;font-size:.92rem;font-style:italic;margin-bottom:12px;min-height:20px;font-weight:500}
@@ -36,28 +35,6 @@ h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
 .answer-input:focus{border-color:#00c896}
 .submit-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0d7a5f,#00c896);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
 .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,180,140,.35)}
-/* COLORING */
-#colorSection{display:none;flex-direction:column;align-items:center}
-.color-title{font-size:1.1rem;font-weight:700;color:#333;margin-bottom:8px;text-align:center}
-.color-legend{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:.8rem;font-weight:600;color:#555}
-.legend-swatch{width:18px;height:18px;border-radius:4px;border:2px solid rgba(0,0,0,.12);flex-shrink:0}
-.palette{display:flex;gap:10px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
-.pal-btn{width:46px;height:46px;border-radius:12px;border:3px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;font-size:.72rem;font-weight:700;color:rgba(0,0,0,.45)}
-.pal-btn:hover{transform:scale(1.1)}
-.pal-btn.selected{border-color:#111 !important;transform:scale(1.18);box-shadow:0 4px 12px rgba(0,0,0,.28)}
-#pixelGrid{display:inline-grid;gap:2px;margin-bottom:10px;background:#e5e7eb;border-radius:10px;padding:6px}
-.cell{border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:rgba(0,0,0,.4);background:#f9fafb;border:1px solid #e5e7eb;transition:background .12s,transform .1s;user-select:none}
-.cell:hover:not(.bg){transform:scale(1.06);border-color:#aaa}
-.cell.bg{background:#f3f4f6;border-color:#e5e7eb;cursor:default;pointer-events:none}
-.cell.painted{color:transparent;border-color:rgba(255,255,255,.3)}
-.cell.wrong-show{border:2px solid #ef4444 !important;animation:wrongPulse .6s ease}
-@keyframes wrongPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.cell.wrong-flash{animation:wFlash .35s ease}
-@keyframes wFlash{0%{background:#fca5a5}100%{background:#f9fafb}}
-.progress-count{font-size:.82rem;color:#888;margin-bottom:8px;text-align:center}
-.color-done-btn{padding:13px 30px;border:none;border-radius:14px;background:linear-gradient(135deg,#4776e6,#8e54e9);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .15s;margin-top:4px}
-.color-done-btn:hover{transform:translateY(-2px)}
 /* TOAST */
 .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:#fff;border-radius:16px;padding:14px 28px;font-size:1.05rem;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.2);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;text-align:center;min-width:220px}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -113,10 +90,9 @@ h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
     <div class="end-score" id="endScore"></div>
     <div class="end-max" id="endMax"></div>
     <div class="stars" id="endStars"></div>
-    <div class="stat-grid">
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr">
       <div class="stat-box"><div class="stat-label">🔢 Regning</div><div class="stat-val" id="sMath">–</div></div>
       <div class="stat-box"><div class="stat-label">🔤 Stavning</div><div class="stat-val" id="sSpell">–</div></div>
-      <div class="stat-box"><div class="stat-label">🎨 Farvning</div><div class="stat-val" id="sColor">–</div></div>
     </div>
     <div class="save-section" id="saveSection">
       <p>Gem dit resultat på topscorerlisten:</p>
@@ -145,7 +121,7 @@ h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
 <div class="card">
   <div id="startScreen">
     <h1>🎓 Lær og Leg</h1>
-    <p class="sub">Regning · Stavning · Farvning</p>
+    <p class="sub">Regning · Stavning</p>
     <p style="text-align:center;color:#666;margin-bottom:16px;font-size:.95rem">Vælg din aldersgruppe:</p>
     <div class="age-grid">
       <button class="age-btn a1" onclick="startGame(0)">4–6 år<br><span style="font-size:.75rem;font-weight:400;opacity:.85">Begynder</span></button>
@@ -170,14 +146,6 @@ h1{text-align:center;font-size:2.1rem;color:#0b5c48;margin-bottom:4px}
       <button class="speak-btn hidden" id="speakBtn" onclick="speak()">🔊 Hør ordet</button>
       <input class="answer-input" id="inp" type="text" placeholder="Skriv dit svar…" autocomplete="off" spellcheck="false">
       <button class="submit-btn" onclick="submit()">Tjek svar ✅</button>
-    </div>
-    <div id="colorSection">
-      <div class="color-title" id="colorTitle"></div>
-      <div class="color-legend" id="colorLegend"></div>
-      <div class="palette" id="palette"></div>
-      <div class="progress-count" id="colorCount"></div>
-      <div id="pixelGrid"></div>
-      <button class="color-done-btn" onclick="submitColoring()">Færdig ✅</button>
     </div>
   </div>
 </div>
@@ -214,7 +182,7 @@ const WORDS={
     {w:'hund',     h:'4 bogstaver – trofastest ven',                s:'"___ logrer med halen når den er glad."'},
     {w:'bil',      h:'3 bogstaver – man kører i den',               s:'"Den røde ___ kørte meget hurtigt."'},
     {w:'sol',      h:'3 bogstaver – skinner på himlen',             s:'"___ skinner og det er dejligt varmt."'},
-    {w:'is',       h:'2 bogstaver – spises om sommeren',            s:'"Jeg fik en jordbær___ i parken."'},
+    {w:'is',       h:'2 bogstaver – spises om sommeren',            s:'"Jeg spiste en ___ i sommervarmen."'},
     {w:'mor',      h:'3 bogstaver – hun passer dig',                s:'"___ lavede pandekager til os i dag."'},
     {w:'far',      h:'3 bogstaver – han passer dig',                s:'"___ læste godnathistorie for mig."'},
     {w:'hus',      h:'3 bogstaver – man bor her',                   s:'"Vores ___ har en stor have."'},
@@ -231,7 +199,7 @@ const WORDS={
     {w:'sko',      h:'3 bogstaver – tages på fødderne',             s:'"Mine ___ er mudrede efter legepladsen."'},
     {w:'mælk',     h:'4 bogstaver – hvid drik fra koen',            s:'"___ er godt for knoglerne."'},
     {w:'banan',    h:'5 bogstaver – gul frugt med bue',             s:'"Aber elsker at spise ___."'},
-    {w:'regn',     h:'4 bogstaver – falder fra skyerne som dråber', s:'"Vi måtte løbe hjem fordi det begyndte at ___."'},
+    {w:'regn',     h:'4 bogstaver – falder fra skyerne som dråber', s:'"Vi satte paraply op fordi der kom ___."'},
     {w:'sne',      h:'3 bogstaver – hvide fnug der falder om vinteren', s:'"Vi byggede en snemand i det hvide ___."'},
     {w:'hav',      h:'3 bogstaver – stor saltvandsmasse',           s:'"___ er meget dybt og blåt."'},
     {w:'bog',      h:'3 bogstaver – man læser i den',               s:'"Jeg lånte en sjov ___ på biblioteket."'},
@@ -241,7 +209,7 @@ const WORDS={
     {w:'gris',     h:'4 bogstaver – lyserødt dyr der oinker',       s:'"___ er faktisk et meget intelligent dyr."'},
     {w:'hest',     h:'4 bogstaver – man rider på den',              s:'"___ galopperede hen over engen."'},
     {w:'mus',      h:'3 bogstaver – lille gnaverdyr med lang hale', s:'"Den lille ___ gemte sig bag ovnen."'},
-    {w:'dag',      h:'3 bogstaver – det modsatte af nat',           s:'"Det er en flot solskinne___."'},
+    {w:'dag',      h:'3 bogstaver – det modsatte af nat',           s:'"Det var en dejlig ___ at lege udenfor."'},
     {w:'nat',      h:'3 bogstaver – det er mørkt da',               s:'"Stjernerne lyser om ___."'},
     {w:'vand',     h:'4 bogstaver – klart og man drikker det',      s:'"Husk at drikke nok ___ hver dag."'},
     {w:'træ',      h:'3 bogstaver – vokser i skoven',               s:'"Det gamle ___ har mange fugle i sig."'},
@@ -252,7 +220,7 @@ const WORDS={
     {w:'fly',      h:'3 bogstaver – flyver på himlen med passagerer', s:'"___ lettede fra lufthavnen klokken otte."'},
     {w:'båd',      h:'4 bogstaver – sejler på vandet',              s:'"Vi sejlede i ___ til øen."'},
     {w:'pude',     h:'4 bogstaver – man lægger hovedet på den om natten', s:'"___ var blød og behagelig."'},
-    {w:'gaffel',   h:'6 bogstaver – bruges til at spise med',       s:'"Brug ___ til at spise pastanen."'},
+    {w:'gaffel',   h:'6 bogstaver – bruges til at spise med',       s:'"Brug ___ til at spise pasta."'},
     {w:'tallerken',h:'9 bogstaver – flad skive til mad på',         s:'"Der er mad på din ___."'},
     {w:'vindue',   h:'6 bogstaver – glas i væggen, man ser ud igennem', s:'"Åbn ___ så der kan komme frisk luft ind."'},
     {w:'gave',     h:'4 bogstaver – noget man får til fødselsdag',  s:'"Jeg fik en ___ pakket ind i papir."'},
@@ -260,8 +228,28 @@ const WORDS={
     {w:'brød',     h:'4 bogstaver – bages i ovnen og spises til mad', s:'"Jeg fik et stykke ___ med smør."'},
     {w:'ost',      h:'3 bogstaver – laves af mælk og er gul eller hvid', s:'"___ smelter godt på varm mad."'},
     {w:'tomat',    h:'5 bogstaver – rød grøntsag brugt i salat',    s:'"___ er faktisk en frugt, ikke en grøntsag."'},
-    {w:'gulerod',  h:'7 bogstaver – orange grøntsag i jordet',      s:'"Kaniner elsker at spise ___."'},
+    {w:'gulerod',  h:'7 bogstaver – orange grøntsag fra haven',     s:'"Kaniner elsker at spise ___."'},
     {w:'jordbær',  h:'7 bogstaver – rød sød sommerberry',           s:'"___ med fløde er en klassisk sommerdessert."'},
+    {w:'cykel',    h:'5 bogstaver – køretøj med to hjul og pedaler', s:'"Jeg cyklede på min ___ til skolen."'},
+    {w:'dør',      h:'3 bogstaver – åbner ind til et rum',           s:'"Luk ___ stille, så du ikke vækker nogen."'},
+    {w:'øje',      h:'3 bogstaver – bruges til at se med',           s:'"Lukas lukkede et ___ og kiggede på solen."'},
+    {w:'mund',     h:'4 bogstaver – bruger du til at tale og spise', s:'"Luk ___ mens du tygger maden."'},
+    {w:'hånd',     h:'4 bogstaver – vifter med dem og bruger dem til at gribe', s:'"Hold min ___ når vi krydser vejen."'},
+    {w:'arm',      h:'3 bogstaver – forbinder skulder og hånd',      s:'"Hun rakte ___ ud og fangede bolden."'},
+    {w:'nøgle',    h:'5 bogstaver – låser og låser op',              s:'"Husk at tage ___ med, ellers kan du ikke komme ind."'},
+    {w:'barn',     h:'4 bogstaver – et ungt menneske',               s:'"Hvert ___ har ret til at lege og lære."'},
+    {w:'ven',      h:'3 bogstaver – nogen man er gode venner med',   s:'"Min bedste ___ bor lige om hjørnet."'},
+    {w:'sang',     h:'4 bogstaver – musik man synger',               s:'"Vi sang en festlig ___ til hendes fødselsdag."'},
+    {w:'dans',     h:'4 bogstaver – bevæger sig til musik',          s:'"Vi øvede en ny ___ til skolefesten."'},
+    {w:'blomst',   h:'6 bogstaver – vokser i haven og har farverige kronblade', s:'"Mor fik en rød ___ i gave."'},
+    {w:'sten',     h:'4 bogstaver – hård klump fra naturen',         s:'"Der lå en flad ___ ved vandkanten."'},
+    {w:'vej',      h:'3 bogstaver – kører biler og cykler på den',   s:'"Kig til begge sider inden du krydser ___."'},
+    {w:'lys',      h:'3 bogstaver – lyser i mørket',                 s:'"Tænd ___ i stuen, det er ved at blive mørkt."'},
+    {w:'brev',     h:'4 bogstaver – skrives og sendes i en konvolut', s:'"Mormor fik et langt ___ fra sin søster."'},
+    {w:'kop',      h:'3 bogstaver – drikker te eller kakao af den',  s:'"Farmor fyldte en varm ___ med kakaomælk."'},
+    {w:'æg',       h:'2 bogstaver – rundt og spises til morgenmad',  s:'"Jeg kogte et ___ i seks minutter."'},
+    {w:'klar',     h:'4 bogstaver – parat til at begynde',           s:'"Er du ___ til at tage af sted?"'},
+    {w:'glas',     h:'4 bogstaver – drikker vand af det',           s:'"Hæld lidt vand i ___."'},
   ],
   1:[ // 7–10 år
     {w:'elefant',    h:'7 bogstaver – stor grå dyr med snabel',         s:'"___ er det største landdyr på Jorden."'},
@@ -281,7 +269,7 @@ const WORDS={
     {w:'eventyr',    h:'7 bogstaver – H.C. Andersen skrev mange',        s:'"Vi læste et spændende ___ om en havfrue."'},
     {w:'bibliotek',  h:'9 bogstaver – sted med mange bøger',             s:'"Vi lånte tre bøger hjem fra ___."'},
     {w:'matematik',  h:'9 bogstaver – faget med tal og regning',         s:'"I ___ lærte vi at gange store tal."'},
-    {w:'Australien', h:'9 bogstaver – kontinent med kænguruer',          s:'"___ er det eneste land der er et helt kontinent."'},
+    {w:'Australien', h:'10 bogstaver – kontinent med kænguruer',         s:'"___ er det eneste land der er et helt kontinent."'},
     {w:'verdensrum', h:'10 bogstaver – det store tomrum uden for Jordens atmosfære', s:'"I ___ er der ingen luft at ånde."'},
     {w:'havfrue',    h:'7 bogstaver – halvt kvinde, halvt fisk',         s:'"___ er en figur fra H.C. Andersens eventyr."'},
     {w:'sommer',     h:'6 bogstaver – årstid med varmt vejr',            s:'"Om ___ bader vi ved stranden."'},
@@ -289,7 +277,7 @@ const WORDS={
     {w:'svømme',     h:'6 bogstaver – bevæge sig i vand',                s:'"Hun lærte at ___ da hun var fire år."'},
     {w:'naturlig',   h:'8 bogstaver – noget der ikke er kunstigt',       s:'"Honning er et ___ sødemiddel."'},
     {w:'museum',     h:'6 bogstaver – sted med kunst og historiske genstande', s:'"Vi besøgte et ___ om vikingerne."'},
-    {w:'opdagelse',  h:'9 bogstaver – noget man finder for første gang', s:'"Columbus ___ af Amerika ændrede verdenshistorien."'},
+    {w:'opdagelse',  h:'9 bogstaver – noget man finder for første gang', s:'"Historikernes ___ af nye kontinenter ændrede verdenshistorien."'},
     {w:'opskrift',   h:'8 bogstaver – trin-for-trin vejledning til at lave mad', s:'"Vi fulgte ___ nøje for at bage kagen."'},
     {w:'delfin',     h:'6 bogstaver – intelligent havpattedyr',          s:'"___ kommunikerer med klik og fløjtelyde."'},
     {w:'krystal',    h:'7 bogstaver – gennemsigtigt mineral',            s:'"___ dannes naturligt i jordskorpen over meget lang tid."'},
@@ -303,15 +291,34 @@ const WORDS={
     {w:'ørn',        h:'3 bogstaver – stor rovfugl med skarpe kløer',   s:'"___ kan se byttet fra lang afstand."'},
     {w:'hajfisk',    h:'7 bogstaver – stor havfisk med spids ryg',       s:'"___ er et vigtigt rovdyr i havets fødekæde."'},
     {w:'blæksprutte',h:'11 bogstaver – havdyr med otte arme',           s:'"___ kan ændre farve for at camouflere sig."'},
-    {w:'vandmand',   h:'8 bogstaver – gennemsigtig havskabning',        s:'"___ har intet hjerne og ingen knogler."'},
+    {w:'vandmand',   h:'8 bogstaver – gennemsigtig havskabning',        s:'"___ har ingen hjerne og ingen knogler."'},
     {w:'pindsvin',   h:'8 bogstaver – lille dyr med pigge på ryggen',   s:'"___ krøller sig til en kugle når den er bange."'},
     {w:'egern',      h:'5 bogstaver – lille dyr der gemmer nødder',     s:'"___ springer fra gren til gren i skoven."'},
     {w:'lineal',     h:'6 bogstaver – bruges til at måle og trække streger', s:'"Brug ___ til at trække en ret linje."'},
     {w:'blyant',     h:'6 bogstaver – bruges til at skrive og tegne med', s:'"Min ___ blev slidt fordi jeg tegnede meget."'},
     {w:'globus',     h:'6 bogstaver – kugleformet kort over Jordens overflade', s:'"___ viser alle landene og havene på Jorden."'},
     {w:'teleskop',   h:'8 bogstaver – instrument til at se stjerner langt væk', s:'"Med et ___ kan man se planeter og stjerner."'},
-    {w:'magnetisme', h:'11 bogstaver – kraft der tiltrækker metal',     s:'"___ er grunden til at kompasset viser nord."'},
+    {w:'magnetisme', h:'10 bogstaver – kraft der tiltrækker metal',     s:'"___ er grunden til at kompasset viser nord."'},
     {w:'fotosyntese',h:'11 bogstaver – planters måde at lave mad med sollys', s:'"Uden ___ ville planter ikke overleve."'},
+    {w:'insekt',     h:'6 bogstaver – lille dyr med seks ben',           s:'"Et ___ har altid seks ben og tre kropsdele."'},
+    {w:'mineral',    h:'7 bogstaver – naturligt fast stof i jordskorpen', s:'"Salt er et ___ vi bruger i madlavning."'},
+    {w:'skelet',     h:'6 bogstaver – kroppens knogleopbygning',         s:'"Menneskekroppens ___ består af over 200 knogler."'},
+    {w:'satellit',   h:'8 bogstaver – kunstig genstand der kredser om Jorden', s:'"En ___ hjælper os med at forudsige vejret."'},
+    {w:'flod',       h:'4 bogstaver – strømmende vand gennem et land',   s:'"Nilen er verdens længste ___."'},
+    {w:'bjerg',      h:'5 bogstaver – naturlig høj toppe i landskabet',  s:'"Mount Everest er jordens højeste ___."'},
+    {w:'bølge',      h:'5 bogstaver – vandstigning på havet',            s:'"Den store ___ skyllede op på stranden."'},
+    {w:'komet',      h:'6 bogstaver – lyser på nattehimlen og har en lang hale', s:'"En ___ er en isklump der kredsede om solen."'},
+    {w:'klima',      h:'5 bogstaver – vejrforhold i et område over mange år', s:'"___ i Danmark er mildt med fire årstider."'},
+    {w:'religion',   h:'8 bogstaver – tro og tilbedelse af noget helligt', s:'"Kristendom er den største ___ i Danmark."'},
+    {w:'symbiose',   h:'8 bogstaver – samarbejde til gensidig nytte',    s:'"Blomster og bier lever i ___ med hinanden."'},
+    {w:'fødekæde',   h:'8 bogstaver – rækkefølge af hvem der spiser hvem', s:'"Græs, kanin og ræv udgør en simpel ___."'},
+    {w:'befolkning', h:'10 bogstaver – alle mennesker i et land eller område', s:'"Danmarks ___ er omkring seks millioner."'},
+    {w:'migration',  h:'9 bogstaver – dyr eller mennesker der flytter til et nyt sted', s:'"Fuglenes ___ mod syd sker hvert efterår."'},
+    {w:'strøm',      h:'5 bogstaver – elektrisk energi der løber i ledninger', s:'"Der gik ___ i lamperne da lynlåsen faldt ned."'},
+    {w:'havstrøm',   h:'9 bogstaver – stor vandbevægelse i havet',       s:'"Golfstrømmen er en vigtig ___ i Atlanterhavet."'},
+    {w:'erosion',    h:'7 bogstaver – langsom nedbrydning af sten og jord', s:'"___ ved kysten gør klipperne glattere med tiden."'},
+    {w:'friktion',   h:'8 bogstaver – modstand der opstår når to flader gnider mod hinanden', s:'"___ er grunden til at bremser kan stoppe en bil."'},
+    {w:'solsystem',  h:'9 bogstaver – solen og alle de planeter der kredser om den', s:'"Vores ___ har otte planeter."'},
   ],
   2:[ // 10–12 år
     {w:'demokrati',       h:'9 bogstaver – folkets styre',                       s:'"Danmark er et ___ med frie og hemmelige valg."'},
@@ -350,7 +357,7 @@ const WORDS={
     {w:'konstruktion',    h:'12 bogstaver – at bygge eller designe noget komplekst', s:'"Broens ___ er teknisk imponerende."'},
     {w:'abstrakt',        h:'8 bogstaver – noget der ikke er konkret og håndgribeligt', s:'"Matematik kan virke ___ men er meget praktisk."'},
     {w:'institution',     h:'11 bogstaver – en etableret organisation i samfundet', s:'"Skolen er en vigtig ___ i ethvert demokrati."'},
-    {w:'paradigme',       h:'9 bogstaver – en dominerende tankemodel',            s:'"Kuhns teorier om ___skift er velkendte i videnskaben."'},
+    {w:'paradigme',       h:'9 bogstaver – en dominerende tankemodel',            s:'"Et nyt ___ opstod da man opdagede at Jorden drejer om solen."'},
     {w:'empirisk',        h:'8 bogstaver – baseret på erfaring og observation',   s:'"Naturvidenskab er ___ og baseres på data."'},
     {w:'retfærdighed',    h:'13 bogstaver – fair og lige behandling af alle',     s:'"___ er fundamentet for et velfungerende samfund."'},
     {w:'bæredygtighed',   h:'14 bogstaver – at bevare ressourcer for fremtiden', s:'"___ handler om at passe på planeten for de næste generationer."'},
@@ -358,268 +365,33 @@ const WORDS={
     {w:'teknologi',       h:'9 bogstaver – redskaber og metoder skabt af videnskab', s:'"Moderne ___ ændrer den måde vi kommunikerer på."'},
     {w:'innovation',      h:'10 bogstaver – ny og kreativ løsning på et problem', s:'"___ er nøglen til at løse fremtidens udfordringer."'},
     {w:'symmetri',        h:'8 bogstaver – balance hvor begge sider er ens',     s:'"En sommerfugl har ___ når man folder den på midten."'},
-    {w:'trigonometri',    h:'13 bogstaver – matematisk beregning af trekanter',  s:'"___ bruges i arkitektur og navigation."'},
+    {w:'trigonometri',    h:'12 bogstaver – matematisk beregning af trekanter',  s:'"___ bruges i arkitektur og navigation."'},
     {w:'kromosom',        h:'8 bogstaver – tråd af DNA i cellens kerne',         s:'"Mennesket har 46 ___ i hver celle."'},
-    {w:'fotosyntese',     h:'11 bogstaver – omdannelse af lys til sukker i planter', s:'"___ foregår i kloroplasten i plantecellerne."'},
+    {w:'oxidation',       h:'9 bogstaver – kemisk reaktion med ilt',               s:'"Rust på jern er et eksempel på ___."'},
     {w:'respiration',     h:'11 bogstaver – åndingsprocessen i levende celler',  s:'"___ frigiver energi fra sukker ved hjælp af ilt."'},
     {w:'urbanisering',    h:'12 bogstaver – bevægelse af folk fra land til by',  s:'"___ har gjort byer meget større de sidste 100 år."'},
     {w:'arkitektur',      h:'10 bogstaver – kunst og videnskab om at designe bygninger', s:'"Den gotiske ___ er kendt for sine høje tårne."'},
+    {w:'argumentation',   h:'14 bogstaver – fremstilling af grunde for en holdning',   s:'"En god ___ bygger på fakta og logik."'},
+    {w:'dokumentation',   h:'13 bogstaver – skriftligt bevis eller beskrivelse',        s:'"Videnskabelige resultater kræver grundig ___."'},
+    {w:'diversitet',      h:'10 bogstaver – mangfoldighed og variation',                s:'"___ i naturen gør økosystemer mere robuste."'},
+    {w:'gennemsnit',      h:'10 bogstaver – det samlede tal divideret med antal',       s:'"Klassens ___ i matematik var 7,5."'},
+    {w:'kapitalisme',     h:'11 bogstaver – økonomisk system med privat ejerskab',      s:'"I ___ er det markedet der bestemmer priserne."'},
+    {w:'momentum',        h:'8 bogstaver – bevægelsesmængde i fysik',                   s:'"En tung lastbil har mere ___ end en cykel ved samme hastighed."'},
+    {w:'mutation',        h:'8 bogstaver – ændring i et DNA-molekyle',                  s:'"En ___ kan give et dyr nye egenskaber."'},
+    {w:'parlament',       h:'9 bogstaver – folkevalgt lovgivende forsamling',           s:'"Det danske ___ hedder Folketing og har 179 medlemmer."'},
+    {w:'statistik',       h:'9 bogstaver – indsamling og analyse af taldata',           s:'"___ viser at danskere sover gennemsnitligt syv timer."'},
+    {w:'tolerance',       h:'9 bogstaver – accept af andres forskelligheder',           s:'"___ og respekt er grundlaget for et godt fællesskab."'},
+    {w:'velfærd',         h:'7 bogstaver – statens omsorg for borgernes grundbehov',    s:'"Den danske ___ sikrer gratis uddannelse og sundhedspleje."'},
+    {w:'sekularisme',     h:'11 bogstaver – adskillelse af religion og stat',           s:'"___ betyder at politik ikke styres af religion."'},
+    {w:'socialisme',      h:'10 bogstaver – politisk ideologi om fælles ejerskab',      s:'"I ___ er målet at fordele rigdom mere ligeligt."'},
+    {w:'kolonialisme',    h:'12 bogstaver – europæiske landes overtagelse af fjerne områder', s:'"___ havde store konsekvenser for Afrika og Asien."'},
+    {w:'effektivitet',    h:'12 bogstaver – evnen til at gøre noget med mindst mulig spild', s:'"Ny teknologi øger produktionens ___."'},
+    {w:'imperialisme',    h:'12 bogstaver – et lands dominans over andre lande',        s:'"Det Britiske Imperiums ___ bredte sig over mange kontinenter."'},
+    {w:'naturvidenskab',  h:'14 bogstaver – systematisk studie af naturen',              s:'"___ bygger på observationer, eksperimenter og teorier."'},
+    {w:'demokratisering', h:'15 bogstaver – processen med at indføre demokrati',       s:'"___ af Østeuropa skete efter murens fald i 1989."'},
+    {w:'eksistentiel',    h:'12 bogstaver – vedrørende selve tilværelsens grundlag',    s:'"Klimakrisen er en ___ trussel mod mange arter."'},
   ],
 };
-
-// ═══════════════════════════════════════════════════════════
-// PIXEL ART ANIMALS
-// ═══════════════════════════════════════════════════════════
-const ANIMALS=[
-  {
-    name:'🐱 Katten', cols:12,
-    pal:[null,{h:'#f97316',n:'Orange'},{h:'#16a34a',n:'Grøn'},{h:'#f9a8d4',n:'Pink'},{h:'#fef3c7',n:'Creme'}],
-    grid:[
-      0,0,1,1,0,0,0,0,1,1,0,0,
-      0,1,3,1,0,0,0,0,1,3,1,0,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,2,2,1,1,1,1,2,2,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,4,4,4,4,4,4,4,4,1,1,
-      1,1,4,3,4,4,4,4,3,4,1,1,
-      1,1,4,4,3,3,3,3,4,4,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      0,1,1,1,1,1,1,1,1,1,1,0,
-    ],
-  },
-  {
-    // Redesignet: klar sideprofil, oval krop, hale, ryg- og bugfinne, tydeligt øje
-    name:'🐟 Fisken', cols:14,
-    pal:[null,{h:'#f97316',n:'Orange'},{h:'#0ea5e9',n:'Blå'},{h:'#1e293b',n:'Mørk'}],
-    grid:[
-      0,0,0,0,0,1,1,1,1,0,0,0,0,0,
-      0,0,0,2,2,2,2,2,2,2,2,1,0,0,
-      0,0,2,2,2,2,2,2,2,2,2,2,1,0,
-      3,2,3,2,2,2,2,2,2,2,2,2,2,1,
-      2,2,2,2,2,2,2,2,2,2,2,2,0,0,
-      3,2,2,2,1,2,2,2,2,2,2,2,2,1,
-      0,0,2,2,2,2,2,2,2,2,2,2,1,0,
-      0,0,0,2,2,2,2,2,2,2,2,1,0,0,
-      0,0,0,0,0,1,1,1,1,0,0,0,0,0,
-    ],
-  },
-  {
-    name:'🦉 Uglen', cols:10,
-    pal:[null,{h:'#92400e',n:'Brun'},{h:'#fbbf24',n:'Gul'},{h:'#f97316',n:'Orange'},{h:'#fef3c7',n:'Creme'}],
-    grid:[
-      0,1,1,1,1,1,1,1,1,0,
-      0,1,4,4,1,1,4,4,1,0,
-      1,1,2,2,1,1,2,2,1,1,
-      1,1,2,2,1,1,2,2,1,1,
-      1,1,4,4,3,3,4,4,1,1,
-      1,1,4,4,4,4,4,4,1,1,
-      1,4,1,1,1,1,1,1,4,1,
-      1,4,4,1,1,1,1,4,4,1,
-      0,1,1,4,1,1,4,1,1,0,
-      0,0,1,1,1,1,1,1,0,0,
-    ],
-  },
-  {
-    name:'🐧 Pingvinen', cols:8,
-    pal:[null,{h:'#1e293b',n:'Mørkeblå'},{h:'#f8fafc',n:'Hvid'},{h:'#fbbf24',n:'Gul'},{h:'#f97316',n:'Orange'}],
-    grid:[
-      0,0,1,1,1,1,0,0,
-      0,1,1,2,2,1,1,0,
-      0,1,3,2,2,3,1,0,
-      0,1,1,2,2,1,1,0,
-      0,0,1,3,3,1,0,0,
-      1,1,1,2,2,1,1,1,
-      1,1,1,2,2,1,1,1,
-      1,1,2,2,2,2,1,1,
-      1,1,2,2,2,2,1,1,
-      1,1,1,2,2,1,1,1,
-      0,4,1,1,1,1,4,0,
-      0,4,4,0,0,4,4,0,
-    ],
-  },
-  {
-    name:'🐇 Kaninen', cols:8,
-    pal:[null,{h:'#d1d5db',n:'Grå'},{h:'#f9a8d4',n:'Lyserød'},{h:'#ec4899',n:'Pink'},{h:'#f9fafb',n:'Hvid'}],
-    grid:[
-      0,1,1,0,0,1,1,0,
-      0,1,2,0,0,2,1,0,
-      0,1,1,0,0,1,1,0,
-      0,1,1,0,0,1,1,0,
-      1,1,1,1,1,1,1,1,
-      1,1,3,1,1,3,1,1,
-      1,1,1,3,3,1,1,1,
-      0,1,1,1,1,1,1,0,
-      0,1,4,4,4,4,1,0,
-      0,1,4,4,4,4,1,0,
-      0,0,1,4,4,1,0,0,
-      0,0,1,0,0,1,0,0,
-    ],
-  },
-  {
-    name:'🐸 Frøen', cols:10,
-    pal:[null,{h:'#16a34a',n:'Grøn'},{h:'#fbbf24',n:'Gul'},{h:'#14532d',n:'Mørkegrøn'}],
-    grid:[
-      0,2,2,0,0,0,0,2,2,0,
-      1,2,2,1,0,0,1,2,2,1,
-      1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,3,3,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,
-      0,1,1,3,1,1,3,1,1,0,
-      0,1,1,1,1,1,1,1,1,0,
-      0,0,1,1,0,0,1,1,0,0,
-    ],
-  },
-  {
-    // Redesignet: større sommerfugl med tydelig krop og vinger
-    name:'🦋 Sommerfuglen', cols:14,
-    pal:[null,{h:'#f97316',n:'Orange'},{h:'#1e293b',n:'Mørk'},{h:'#fbbf24',n:'Gul'}],
-    grid:[
-      0,0,0,2,0,0,0,0,0,0,2,0,0,0,
-      0,0,0,0,2,0,0,0,0,2,0,0,0,0,
-      1,1,1,0,0,2,2,2,2,0,0,1,1,1,
-      1,1,1,1,3,2,2,2,2,3,1,1,1,1,
-      1,1,1,1,1,2,2,2,2,1,1,1,1,1,
-      0,1,1,1,1,2,2,2,2,1,1,1,1,0,
-      0,0,1,1,1,2,2,2,2,1,1,1,0,0,
-      0,0,1,3,1,2,2,2,2,1,3,1,0,0,
-      0,0,0,1,1,2,2,2,2,1,1,0,0,0,
-      0,0,0,0,0,2,2,2,2,0,0,0,0,0,
-      0,0,0,0,0,0,2,2,0,0,0,0,0,0,
-    ],
-  },
-  {
-    name:'🐘 Elefanten', cols:12,
-    pal:[null,{h:'#9ca3af',n:'Grå'},{h:'#f9a8d4',n:'Pink'},{h:'#374151',n:'Mørk'}],
-    grid:[
-      0,2,2,0,1,1,1,1,0,2,2,0,
-      2,2,2,1,1,1,1,1,1,2,2,2,
-      2,2,1,1,3,1,1,3,1,1,2,2,
-      2,2,1,1,1,1,1,1,1,1,2,2,
-      0,2,1,1,1,1,1,1,1,1,2,0,
-      0,0,1,1,1,1,1,1,1,1,0,0,
-      0,0,0,1,1,1,1,1,1,0,0,0,
-      0,0,0,0,1,1,1,1,0,0,0,0,
-      0,0,0,0,0,1,1,0,0,0,0,0,
-      0,0,0,0,0,1,1,0,0,0,0,0,
-    ],
-  },
-  {
-    name:'🐻 Bjørnen', cols:12,
-    pal:[null,{h:'#92400e',n:'Brun'},{h:'#374151',n:'Mørk'},{h:'#fef3c7',n:'Creme'},{h:'#b45309',n:'Mellembrun'}],
-    grid:[
-      0,4,4,0,0,0,0,0,0,4,4,0,
-      4,1,1,4,1,1,1,1,4,1,1,4,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,2,2,1,1,1,1,2,2,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,3,3,3,3,3,3,3,3,1,1,
-      1,1,3,3,3,2,2,3,3,3,1,1,
-      1,1,3,3,3,3,3,3,3,3,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      0,1,1,1,1,1,1,1,1,1,1,0,
-    ],
-  },
-  {
-    name:'🦊 Ræven', cols:12,
-    pal:[null,{h:'#ea580c',n:'Orange'},{h:'#f8fafc',n:'Hvid'},{h:'#1e293b',n:'Sort'}],
-    grid:[
-      1,1,0,0,0,0,0,0,0,0,1,1,
-      1,1,1,0,0,0,0,0,0,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,3,1,1,1,1,1,1,3,1,1,
-      1,2,2,2,1,1,1,1,2,2,2,1,
-      1,2,2,2,3,1,1,3,2,2,2,1,
-      1,2,2,2,2,3,3,2,2,2,2,1,
-      0,1,2,1,1,1,1,1,1,2,1,0,
-      0,0,1,1,1,1,1,1,1,1,0,0,
-      0,0,0,1,0,0,0,0,1,0,0,0,
-    ],
-  },
-  {
-    name:'🐮 Koen', cols:12,
-    pal:[null,{h:'#f8fafc',n:'Hvid'},{h:'#1e293b',n:'Sort'},{h:'#f9a8d4',n:'Pink'}],
-    grid:[
-      0,0,1,1,0,0,0,0,1,1,0,0,
-      0,1,1,1,1,1,1,1,1,1,1,0,
-      1,1,2,1,1,1,1,1,1,2,1,1,
-      1,1,2,1,2,1,1,2,1,2,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,3,3,3,3,3,3,1,1,1,
-      1,1,1,3,2,3,3,2,3,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      0,1,1,1,1,1,1,1,1,1,1,0,
-      0,0,1,1,0,0,0,0,1,1,0,0,
-    ],
-  },
-  {
-    // Løve: frontalt ansigt med manke
-    name:'🦁 Løven', cols:12,
-    pal:[null,{h:'#f59e0b',n:'Guld'},{h:'#92400e',n:'Brun'},{h:'#374151',n:'Mørk'},{h:'#fef3c7',n:'Creme'}],
-    grid:[
-      2,2,2,2,2,2,2,2,2,2,2,2,
-      2,2,2,1,1,1,1,1,1,2,2,2,
-      2,2,1,1,1,1,1,1,1,1,2,2,
-      2,1,1,1,3,1,1,3,1,1,1,2,
-      2,1,1,1,1,1,1,1,1,1,1,2,
-      2,1,1,4,4,4,4,4,4,1,1,2,
-      2,1,1,4,3,4,4,3,4,1,1,2,
-      2,1,1,4,4,3,3,4,4,1,1,2,
-      2,2,1,1,1,1,1,1,1,1,2,2,
-      2,2,2,1,1,1,1,1,1,2,2,2,
-      2,2,2,2,2,2,2,2,2,2,2,2,
-      0,2,2,2,2,2,2,2,2,2,2,0,
-    ],
-  },
-  {
-    // Krokodil: sideprofil
-    name:'🐊 Krokodillen', cols:14,
-    pal:[null,{h:'#15803d',n:'Mørkegrøn'},{h:'#86efac',n:'Lysegrøn'},{h:'#fbbf24',n:'Gul'}],
-    grid:[
-      0,0,0,0,1,1,1,1,1,1,0,0,0,0,
-      0,0,0,1,1,1,1,1,1,1,1,0,0,0,
-      0,1,1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,3,1,2,1,1,1,1,1,1,1,1,0,
-      1,1,3,2,2,1,1,1,1,1,1,1,0,0,
-      0,1,1,1,1,2,2,2,2,1,1,0,0,0,
-      0,0,1,0,0,1,1,1,0,0,1,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    ],
-  },
-  {
-    // Papegøje: frontalt
-    name:'🦜 Papegøjen', cols:10,
-    pal:[null,{h:'#dc2626',n:'Rød'},{h:'#16a34a',n:'Grøn'},{h:'#fbbf24',n:'Gul'},{h:'#2563eb',n:'Blå'}],
-    grid:[
-      0,0,0,1,1,1,1,0,0,0,
-      0,0,1,1,1,1,1,1,0,0,
-      0,0,1,3,1,1,3,1,0,0,
-      0,0,1,1,3,3,1,1,0,0,
-      0,2,2,1,1,1,1,2,2,0,
-      2,2,2,1,1,1,1,2,2,2,
-      2,2,1,1,1,1,1,1,2,2,
-      2,2,1,4,1,1,4,1,2,2,
-      2,2,4,4,1,1,4,4,2,2,
-      0,4,4,1,1,1,1,4,4,0,
-      0,0,4,1,1,1,1,4,0,0,
-      0,0,0,3,1,1,3,0,0,0,
-    ],
-  },
-  {
-    // Sneglen: redesignet med tydelig skal og krop
-    name:'🐌 Sneglen', cols:12,
-    pal:[null,{h:'#16a34a',n:'Grøn'},{h:'#f97316',n:'Orange'},{h:'#fbbf24',n:'Gul'},{h:'#c2410c',n:'Mørkeorange'}],
-    grid:[
-      0,0,0,0,2,2,2,2,0,0,0,0,
-      0,0,0,2,2,4,4,2,2,0,0,0,
-      0,0,2,2,4,2,2,4,2,2,0,0,
-      0,0,2,2,2,4,4,2,2,2,0,0,
-      3,0,0,2,2,2,2,2,0,0,0,0,
-      0,3,1,1,2,2,2,2,1,0,0,0,
-      1,1,1,1,1,1,1,1,1,1,0,0,
-      0,1,1,1,1,1,1,1,1,0,0,0,
-    ],
-  },
-];
 
 // ═══════════════════════════════════════════════════════════
 // MATH GENERATOR
@@ -627,10 +399,9 @@ const ANIMALS=[
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function genMath(ag){
   if(ag===0){
-    const t=rnd(0,3);
+    const t=rnd(0,2);
     if(t===0){const a=rnd(1,9),b=rnd(1,10-a);return{q:`${a} + ${b} = ?`,a:String(a+b)}}
     if(t===1){const a=rnd(2,10),b=rnd(1,a-1);return{q:`${a} − ${b} = ?`,a:String(a-b)}}
-    if(t===2){const tb=[2,5,10],v=tb[rnd(0,2)],n=rnd(1,5);return{q:`${n} × ${v} = ?`,a:String(n*v)}}
     const n=rnd(1,10)*2;return{q:`Hvad er halvdelen af ${n}?`,a:String(n/2)}
   }
   if(ag===1){
@@ -701,24 +472,20 @@ function saveAndShow(){
 // STATE
 // ═══════════════════════════════════════════════════════════
 let age,sequence,idx,totalScore,streak,stats,usedWords;
-let selectedColor=1,userColors=[],currentAnimal=null;
-const TOTAL=15;
-const MAX_POSSIBLE=39; // max hvis streak altid er 5+
+const TOTAL=20;
+const MAX_POSSIBLE=54; // max hvis streak altid er 5+ (q1+q2=1×2, q3+q4=2×2, q5-q20=3×16)
 
 function calcPoints(s){return Math.min(3,Math.ceil(s/2))}
 
 function buildSequence(){
   const seq=[];
-  for(let i=0;i<15;i++){
-    if((i+1)%5===0) seq.push('color');
-    else seq.push(i%2===0?'math':'spell');
-  }
+  for(let i=0;i<20;i++) seq.push(i%2===0?'math':'spell');
   return seq;
 }
 
 function startGame(ag){
   age=ag; totalScore=0; streak=0; idx=0;
-  stats={math:{c:0,t:0},spell:{c:0,t:0},color:{c:0,t:0}};
+  stats={math:{c:0,t:0},spell:{c:0,t:0}};
   usedWords=new Set();
   sequence=buildSequence();
   document.getElementById('startScreen').classList.add('hidden');
@@ -729,8 +496,7 @@ function startGame(ag){
 
 function showActivity(){
   updateMeta(sequence[idx]);
-  if(sequence[idx]==='color') showColoring();
-  else showQA(sequence[idx]);
+  showQA(sequence[idx]);
 }
 
 function updateMeta(type){
@@ -739,8 +505,7 @@ function updateMeta(type){
   document.getElementById('scoreTxt').textContent=totalScore;
   const b=document.getElementById('catBadge');
   if(type==='math'){b.textContent='🔢 Regning';b.className='cat-badge cat-math'}
-  else if(type==='spell'){b.textContent='🔤 Stavning';b.className='cat-badge cat-spell'}
-  else{b.textContent='🎨 Farvning';b.className='cat-badge cat-color'}
+  else{b.textContent='🔤 Stavning';b.className='cat-badge cat-spell'}
 }
 
 function updateStreakUI(){
@@ -759,7 +524,6 @@ function updateStreakUI(){
 // ═══════════════════════════════════════════════════════════
 function showQA(type){
   document.getElementById('qaSection').style.display='';
-  document.getElementById('colorSection').style.display='none';
   currentWord='';
   const inp=document.getElementById('inp');
   if(type==='math'){
@@ -817,114 +581,6 @@ function submit(){
 function pickCheer(){return['Rigtigt!','Super!','Korrekt!','Perfekt!','Ja!','Bravo!'][rnd(0,5)]}
 
 // ═══════════════════════════════════════════════════════════
-// COLORING
-// ═══════════════════════════════════════════════════════════
-function showColoring(){
-  document.getElementById('qaSection').style.display='none';
-  document.getElementById('colorSection').style.display='flex';
-  currentAnimal=ANIMALS[rnd(0,ANIMALS.length-1)];
-  document.getElementById('colorTitle').textContent=`🎨 Farvelæg: ${currentAnimal.name}`;
-  const usedIdx=[...new Set(currentAnimal.grid.filter(v=>v>0))].sort();
-
-  // legend
-  const leg=document.getElementById('colorLegend');
-  leg.innerHTML='';
-  usedIdx.forEach(ci=>{
-    const d=document.createElement('div');
-    d.className='legend-item';
-    d.innerHTML=`<div class="legend-swatch" style="background:${currentAnimal.pal[ci].h}"></div><span>${ci} = ${currentAnimal.pal[ci].n}</span>`;
-    leg.appendChild(d);
-  });
-
-  // palette
-  const pal=document.getElementById('palette');
-  pal.innerHTML='';
-  selectedColor=usedIdx[0];
-  usedIdx.forEach(ci=>{
-    const btn=document.createElement('button');
-    btn.className='pal-btn'+(ci===selectedColor?' selected':'');
-    btn.style.background=currentAnimal.pal[ci].h;
-    btn.title=currentAnimal.pal[ci].n;
-    btn.textContent=ci;
-    btn.onclick=()=>{
-      selectedColor=ci;
-      pal.querySelectorAll('.pal-btn').forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');
-    };
-    pal.appendChild(btn);
-  });
-
-  // grid
-  const gridEl=document.getElementById('pixelGrid');
-  gridEl.innerHTML='';
-  const cols=currentAnimal.cols;
-  const avail=Math.min(500,window.innerWidth)-56-20;
-  const cs=Math.min(42,Math.floor((avail-(cols-1)*2)/cols));
-  gridEl.style.gridTemplateColumns=`repeat(${cols},${cs}px)`;
-  userColors=currentAnimal.grid.map(()=>0);
-
-  currentAnimal.grid.forEach((val,i)=>{
-    const cell=document.createElement('div');
-    cell.className='cell';
-    cell.style.width=cs+'px'; cell.style.height=cs+'px';
-    if(val===0){
-      cell.classList.add('bg');
-    } else {
-      cell.textContent=val;
-      cell.dataset.idx=i;
-      cell.onclick=()=>{
-        // always allow re-painting
-        userColors[i]=selectedColor;
-        cell.style.background=currentAnimal.pal[selectedColor].h;
-        cell.textContent='';
-        cell.classList.add('painted');
-        updateColorCount();
-      };
-    }
-    gridEl.appendChild(cell);
-  });
-
-  stats.color.t++;
-  updateColorCount();
-}
-
-function updateColorCount(){
-  const total=currentAnimal.grid.filter(v=>v>0).length;
-  const painted=userColors.filter((v,i)=>currentAnimal.grid[i]>0&&v>0).length;
-  document.getElementById('colorCount').textContent=`${painted} / ${total} felter malet`;
-}
-
-function submitColoring(){
-  // Check all cells
-  let allRight=true;
-  const cells=document.querySelectorAll('#pixelGrid .cell:not(.bg)');
-  cells.forEach(cell=>{
-    const i=parseInt(cell.dataset.idx);
-    const correct=currentAnimal.grid[i];
-    if(userColors[i]!==correct){
-      allRight=false;
-      cell.classList.add('wrong-show');
-      setTimeout(()=>cell.classList.remove('wrong-show'),800);
-    }
-  });
-
-  if(allRight){
-    streak++;
-    const pts=calcPoints(streak);
-    totalScore+=pts;
-    stats.color.c++;
-    updateStreakUI();
-    toast(`Perfekt farvelægning! 🎨 +${pts} point`,'ok');
-    fireConfetti();
-  } else {
-    streak=0;
-    updateStreakUI();
-    toast('Ikke helt rigtigt – forkerte felter blinker rødt. 0 point.','no');
-  }
-  advance();
-}
-
-// ═══════════════════════════════════════════════════════════
 // ADVANCE + END
 // ═══════════════════════════════════════════════════════════
 function advance(){
@@ -946,7 +602,6 @@ function showEnd(){
   const fmt=s=>`${s.c}/${s.t}`;
   document.getElementById('sMath').textContent=fmt(stats.math);
   document.getElementById('sSpell').textContent=fmt(stats.spell);
-  document.getElementById('sColor').textContent=fmt(stats.color);
   // reset save section
   document.getElementById('saveSection').classList.remove('hidden');
   document.getElementById('endLbSection').classList.add('hidden');
